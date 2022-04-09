@@ -15,7 +15,7 @@ const transactions = [
   {
     id: 1,
     description: "Luz",
-    amount: -5000,
+    amount: -50000,
     date: "23/01/2022",
   },
   {
@@ -33,43 +33,118 @@ const transactions = [
 ];
 
 const Transaction = {
+  
+  all: transactions,
+  add(transaction){
+    Transaction.all.push(transaction);
+  },
+  remove(transaction){},
   incomes() {
-    //somar as entradas
+
+    let income = 0;
+    
+    Transaction.all.forEach( transaction => {
+      if(transaction.amount > 0){
+        income += transaction.amount;
+      }
+    });
+
+    return income;
   },
   expenses() {
-    //soma as saídas
+
+    let expense = 0;
+    
+    Transaction.all.forEach( transaction => {
+      if(transaction.amount < 0){
+        expense += transaction.amount;
+      }
+    });
+
+    return expense;
   },
   total() {
-    //entradas - saídas
+    return Transaction.incomes() + Transaction.expenses();
   },
 };
 
 //Colocar os dados das trasações do js no html
 
 const DOM = {
-    
-    transactionsContainer: document.querySelector('#data-table tbody'),
+  transactionsContainer: document.querySelector("#data-table tbody"),
 
-    addTransaction(transaction, index){
-        const tr = document.createElement('tr');
-        tr.innerHTML = DOM.innerHTMLTransaction(transaction)
-        console.log(tr.innerHTML);
+  addTransaction(transaction, index) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = DOM.innerHTMLTransaction(transaction);
 
-        DOM.transactionsContainer.appendChild(tr);
-    },
-    innerHTMLTransaction(transaction) {
-        const html = `
+    DOM.transactionsContainer.appendChild(tr);
+  },
+
+  innerHTMLTransaction(transaction) {
+
+    const CSSclasses = transaction.amount > 0 ? "income":"expense";
+
+    const amount = Utils.formatCurrency(transaction.amount) 
+
+    const html = `
         <td class="description">${transaction.description}</td>
-        <td class="expense">${transaction.amount}</td>
+        <td class="${CSSclasses}">${amount}</td>
         <td class="date">${transaction.date}</td>
         <td>
             <img src="./assets/minus.svg" alt="Remover Transação" />
         </td>
         `;
 
-        return html;
-    }
+    return html;
+  },
+
+  updateBalance() {
+
+    document.getElementById('incomeDisplay')
+    .innerHTML = Utils.formatCurrency(Transaction.incomes());
+    document.getElementById('expenseDisplay')
+    .innerHTML = Utils.formatCurrency(Transaction.expenses());
+    document.getElementById('totalDisplay')
+    .innerHTML = Utils.formatCurrency(Transaction.total());
+  }
+
 };
 
-transactions.forEach((transaction) => DOM.addTransaction(transaction))
+const Utils = {
 
+  formatCurrency(value){
+    const signal = Number(value) < 0 ? "-": "";
+
+    value = String(value).replace(/\D/g, "");
+
+    value = Number(value) / 100;
+
+    value = value.toLocaleString("pt-Br", {
+      style: "currency",
+      currency: "BRL"
+    })
+
+    return signal + value;    
+  }
+}
+
+const App = {
+  init(){
+
+    Transactions.all.forEach(transaction => DOM.addTransaction(transaction));
+    
+    DOM.updateBalance();
+
+    Transaction.add({
+      id:39,
+      description: 'abc',
+      amount:200,
+      date:'23/01/2022'
+    });
+  },
+  reload(){
+    App.init();
+  }
+}
+
+App.init();
