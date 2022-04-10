@@ -1,50 +1,43 @@
-const modal = {
+const Modal = {
   open() {
-    //abrir modal
-    //adcionar a class active ao modal
     document.querySelector(".modal-overlay").classList.add("active");
   },
   close() {
-    //fechar modal
-    //retirar a class active ao modal
-    document.querySelector(".button.cancel").classList.remove("active");
+    document.querySelector(".modal-overlay").classList.remove("active");
   },
 };
 
-const transactions = [
-  {
-    id: 1,
-    description: "Luz",
-    amount: -50000,
-    date: "23/01/2022",
-  },
-  {
-    id: 2,
-    description: "Website",
-    amount: 500000,
-    date: "23/01/2022",
-  },
-  {
-    id: 3,
-    description: "Internet",
-    amount: -20000,
-    date: "23/01/2022",
-  },
-];
-
 const Transaction = {
-  
-  all: transactions,
-  add(transaction){
+  all: [
+    {
+      description: "Luz",
+      amount: -50000,
+      date: "23/01/2022",
+    },
+    {
+      description: "Website",
+      amount: 500000,
+      date: "23/01/2022",
+    },
+    {
+      description: "Internet",
+      amount: -20000,
+      date: "23/01/2022",
+    },
+  ],
+  add(transaction) {
     Transaction.all.push(transaction);
+    App.reload();
   },
-  remove(transaction){},
+  remove(index) {
+    Transaction.all.splice(index, 1);
+    App.reload();
+  },
   incomes() {
-
     let income = 0;
-    
-    Transaction.all.forEach( transaction => {
-      if(transaction.amount > 0){
+
+    Transaction.all.forEach((transaction) => {
+      if (transaction.amount > 0) {
         income += transaction.amount;
       }
     });
@@ -52,11 +45,10 @@ const Transaction = {
     return income;
   },
   expenses() {
-
     let expense = 0;
-    
-    Transaction.all.forEach( transaction => {
-      if(transaction.amount < 0){
+
+    Transaction.all.forEach((transaction) => {
+      if (transaction.amount < 0) {
         expense += transaction.amount;
       }
     });
@@ -67,8 +59,6 @@ const Transaction = {
     return Transaction.incomes() + Transaction.expenses();
   },
 };
-
-//Colocar os dados das trasações do js no html
 
 const DOM = {
   transactionsContainer: document.querySelector("#data-table tbody"),
@@ -81,10 +71,9 @@ const DOM = {
   },
 
   innerHTMLTransaction(transaction) {
+    const CSSclasses = transaction.amount > 0 ? "income" : "expense";
 
-    const CSSclasses = transaction.amount > 0 ? "income":"expense";
-
-    const amount = Utils.formatCurrency(transaction.amount) 
+    const amount = Utils.formatCurrency(transaction.amount);
 
     const html = `
         <td class="description">${transaction.description}</td>
@@ -99,21 +88,24 @@ const DOM = {
   },
 
   updateBalance() {
-
-    document.getElementById('incomeDisplay')
-    .innerHTML = Utils.formatCurrency(Transaction.incomes());
-    document.getElementById('expenseDisplay')
-    .innerHTML = Utils.formatCurrency(Transaction.expenses());
-    document.getElementById('totalDisplay')
-    .innerHTML = Utils.formatCurrency(Transaction.total());
-  }
-
+    document.getElementById("incomeDisplay").innerHTML = Utils.formatCurrency(
+      Transaction.incomes()
+    );
+    document.getElementById("expenseDisplay").innerHTML = Utils.formatCurrency(
+      Transaction.expenses()
+    );
+    document.getElementById("totalDisplay").innerHTML = Utils.formatCurrency(
+      Transaction.total()
+    );
+  },
+  clearTransactions() {
+    DOM.transactionsContainer.innerHTML = "";
+  },
 };
 
 const Utils = {
-
-  formatCurrency(value){
-    const signal = Number(value) < 0 ? "-": "";
+  formatCurrency(value) {
+    const signal = Number(value) < 0 ? "-" : "";
 
     value = String(value).replace(/\D/g, "");
 
@@ -121,30 +113,83 @@ const Utils = {
 
     value = value.toLocaleString("pt-Br", {
       style: "currency",
-      currency: "BRL"
-    })
+      currency: "BRL",
+    });
 
-    return signal + value;    
-  }
-}
+    return signal + value;
+  },
+  formatAmount(value) {
+    value = Number(value.replace(/\,\./g,"")) * 100;
+    return value;
+  },
+  formateDate(date) {
+    const splitedDate = date.split("-");
+    return `${splitedDate[2]}/${splitedDate[1]}/${splitedDate[0]}`;
+  },
+};
+
+const Form = {
+  description: document.querySelector("input#description"),
+  amount: document.querySelector("input#amount"),
+  date: document.querySelector("input#date"),
+
+  getValues() {
+    return {
+      description: Form.description.value,
+      amount: Form.amount.value,
+      date: Form.date.value,
+    }
+  },
+  validateFields() {
+    const { description, amount, date } = Form.getValues();
+    if (
+      description.trim() === "" ||
+      amount.trim() === "" ||
+      date.trim() === ""
+    ) {
+      throw new Error("Por favor, preencha todos os campos!");
+    }
+  },
+  FormatValues() {
+    let { description, amount, date } = Form.getValues();
+    amount = Utils.formatAmount(amount);
+    date = Utils.formateDate(date);
+    return {
+      description,
+      amount,
+      date
+    }
+  },
+  ClearFields(){
+    Form.description.value = "";
+    Form.amount.value = "";
+    Form.date.value = "";
+  },
+  submit(event) {
+    event.preventDefault();
+
+    try {
+      Form.validateFields();
+      const transaction = Form.FormatValues();
+      Transaction.add(transaction);
+      Form.ClearFields();
+      Modal.close();
+    } catch (error) {
+      alert(error.message);
+    }
+  },
+};
 
 const App = {
-  init(){
+  init() {
+    Transaction.all.forEach((transaction) => DOM.addTransaction(transaction));
 
-    Transactions.all.forEach(transaction => DOM.addTransaction(transaction));
-    
     DOM.updateBalance();
-
-    Transaction.add({
-      id:39,
-      description: 'abc',
-      amount:200,
-      date:'23/01/2022'
-    });
   },
-  reload(){
+  reload() {
+    DOM.clearTransactions();
     App.init();
-  }
-}
+  },
+};
 
 App.init();
