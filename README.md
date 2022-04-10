@@ -1,16 +1,21 @@
 # dev_finance
 
-This is a front end project developed @ Discover promoted by RocketSeat.
+This is a front-end project developed @ Discover promoted by RocketSeat.
 
 ## Tech Stack
 
-<img alt="TypeScript" width="26px" src="https://cdn-icons-png.flaticon.com/512/5968/5968381.png" /><img alt="Java" width="26px" src="https://cdn-icons-png.flaticon.com/512/226/226777.png" /><img alt="React.js" width="26px" src="https://cdn-icons-png.flaticon.com/512/919/919851.png" /><img alt="Spring" width="86px" src="https://spring.io/images/spring-logo-9146a4d3298760c2e7e49595184e1975.svg" /><img alt="Postgres" width="26px" src="https://cdn-icons-png.flaticon.com/512/5968/5968342.png" />
+<img alt="HTML5" width="28px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/html/html.png" /><img alt="CSS3" width="28px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/css/css.png" /><img alt="JavaScript" width="23px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/javascript/javascript.png" />
 
+  
 
 ## Link
-https://davidsmovie.netlify.app
+to do
 
-## Preview
+## Demo
+
+![portfolio desktop screenshot](*.gif)
+  
+## Screenshots
 
 ![](project-img.jpg)
 
